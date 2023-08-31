@@ -49,7 +49,7 @@ class Profile(BaseModel):
     blood_group = models.CharField(max_length=255 ,null=True,blank=True)
     blood_genotype = models.CharField(max_length=255 ,null=True,blank=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    bio = models.TextField(null=True ,null=True,blank=True)
+    bio = models.TextField(null=True,blank=True)
     image = models.ImageField(upload_to='', null=True, blank=True)
     
     def __str__(self):

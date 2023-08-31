@@ -4,11 +4,11 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (AwardsViewSet, CertificationViewSet, CustomUserViewSet,
                     EducationViewSet, InterestViewSet, LanguagesViewSet,
-                    ProfileViewSet, RanksViewSet, RegistrationView,
+                    ProfileViewSet, RanksViewSet, 
                     UserLoginView, WorkExperienceViewSet)
 
 router = DefaultRouter()
-router.register(r'register', RegistrationView, basename='register')
+# router.register(r'register', RegistrationView, basename='register')
 router.register(r'profiles', ProfileViewSet, basename='profile')
 
 router.register(r'users', CustomUserViewSet)

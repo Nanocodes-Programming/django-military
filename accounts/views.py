@@ -6,7 +6,7 @@ from .models import (Awards, Certification, CustomUser, Education, Interest,
 from .serializers import (AwardsSerializer, CertificationSerializer,
                           CustomUserSerializer, EducationSerializer,
                           InterestSerializer, LanguagesSerializer,
-                          ProfileSerializer, RanksSerializer, UserSerializer,
+                          ProfileSerializer, RanksSerializer,
                           WorkExperienceSerializer)
 
 
@@ -16,6 +16,12 @@ class UserLoginView(TokenObtainPairView):
 class IsStaffUserOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user and request.user.is_staff
+
+class IsStaffUserOrCreate(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'POST':
             return True
         return request.user and request.user.is_staff
 
