@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insecure-)t8f#6p@08vrxym^h(o@kp328)bb1_er(b#(d0)ehqkik6y+_8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -71,7 +71,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'military.wsgi.application'
 
 
-CORS_ORIGIN_ALLOW_ALL = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
