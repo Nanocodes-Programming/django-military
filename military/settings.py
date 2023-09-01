@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 import dj_database_url
 from decouple import config
-# import django_heroku
+import django_heroku
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)t8f#6p@08vrxym^h(o@kp328)bb1_er(b#(d0)ehqkik6y+_8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['127.0.0.1', 'django-military-a2ef48dd12e3.herokuapp.com']
