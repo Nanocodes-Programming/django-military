@@ -20,6 +20,7 @@ SECRET_KEY = 'django-insecure-)t8f#6p@08vrxym^h(o@kp328)bb1_er(b#(d0)ehqkik6y+_8
 DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = ['127.0.0.1', 'django-military-a2ef48dd12e3.herokuapp.com']
 
 
 # Application definition
@@ -70,21 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'military.wsgi.application'
 
-
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-}
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-
-}
 
 
 STATIC_URL = 'static/'
@@ -152,3 +138,17 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.CustomUser"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+
+}
