@@ -1,8 +1,45 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, status, permissions
+from rest_framework.response import Response
 from .models import Message
 from .serializers import MessageSerializer
+from accounts.models import CustomUser
+from common.responses import CustomErrorResponse, CustomSuccessResponse
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Requires authentication for all actions
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        # Get the value of the 'to_user' field from the request data
+        to_user_value = request.data.get('to_user', None)
+        
+        # Check if 'to_user' is 'all'
+        if to_user_value == 'all':
+            # Send the message to all users in the database
+            to_users = CustomUser.objects.all()
+        else:
+            # Check if 'to_user' is a UUID (user ID)
+            try:
+                to_user_uuid = uuid.UUID(to_user_value)
+                to_users = [CustomUser.objects.get(id=to_user_uuid)]
+            except (ValueError, CustomUser.DoesNotExist):
+                # If it's not a UUID or user doesn't exist, treat it as an empty list
+                to_users = []
+        
+        # Create a message for each recipient
+        for to_user in to_users:
+            message_data = {
+                'from_user': request.user,
+                'to_user': to_user,
+                'subject': request.data.get('subject', ''),
+                'body': request.data.get('body', ''),
+                'from_name': request.data.get('from_name', '')
+            }
+            message_serializer = MessageSerializer(data=message_data)
+            if message_serializer.is_valid():
+                message_serializer.save()
+            else:
+                return CustomErrorResponse(data=message_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return CustomSuccessResponse(message='Messages sent successfully.', status=status.HTTP_201_CREATED)

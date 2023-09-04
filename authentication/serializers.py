@@ -1,0 +1,9 @@
+from rest_framework import serializers
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+class ResetPasswordSerializer(serializers.Serializer):
+    id = serializers.UUIDField(required=True)
+    password = serializers.CharField(required=True)

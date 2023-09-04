@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Profile, Education, Languages, WorkExperience, Awards, Certification, Interest, Ranks
+from .models import CustomUser, Profile, Education, Language, WorkExperience, Award, Certification, Interest, Rank
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'phone_number', 'is_active', 'is_staff', 'is_suspended')
@@ -46,9 +46,9 @@ class RanksAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Education, EducationAdmin)
-admin.site.register(Languages, LanguagesAdmin)
+admin.site.register(Language, LanguagesAdmin)
 admin.site.register(WorkExperience, WorkExperienceAdmin)
-admin.site.register(Awards, AwardsAdmin)
+admin.site.register(Award, AwardsAdmin)
 admin.site.register(Certification, CertificationAdmin)
 admin.site.register(Interest, InterestAdmin)
-admin.site.register(Ranks, RanksAdmin)
+admin.site.register(Rank, RanksAdmin)

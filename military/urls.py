@@ -32,9 +32,10 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/',include("accounts.urls"), name='auth'),
-    path('api/v1/',include("messaging.urls"), name='auth'),
-    path('api/v1/',include("support.urls"), name='auth'),
+    path('api/v1/',include("accounts.urls")),
+    path('api/v1/',include("messaging.urls")),
+    path('api/v1/',include("support.urls")),
+    path('api/v1/',include("authentication.urls")),
     path('api/', schema_view.with_ui('swagger', cache_timeout=None)),
 
 ]

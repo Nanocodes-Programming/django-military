@@ -13,7 +13,7 @@ class IssueCategory(BaseModel):
 class UserSupportIssue(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     issue_category = models.ForeignKey(IssueCategory, on_delete=models.CASCADE)
-    body = models.TimeField()
+    body = models.TextField()
     resolved = models.BooleanField(default=False)
 
     def __str__(self):

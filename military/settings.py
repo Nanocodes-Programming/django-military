@@ -17,10 +17,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)t8f#6p@08vrxym^h(o@kp328)bb1_er(b#(d0)ehqkik6y+_8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['127.0.0.1', 'django-military-a2ef48dd12e3.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'django-military-a2ef48dd12e3.herokuapp.com', 'localhost',]
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'support',
     'drf_yasg',
     'messaging',
+    'authentication',
     'corsheaders',
 ]
 

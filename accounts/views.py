@@ -1,8 +1,10 @@
-from rest_framework import viewsets, permissions
-from rest_framework_simplejwt.views import TokenObtainPairView
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
+from rest_framework.response import Response
 
-from .models import (Awards, Certification, CustomUser, Education, Interest,
-                     Languages, Profile, Ranks, WorkExperience)
+from .models import (Award, Certification, CustomUser, Education, Interest,
+                     Language, Profile, Rank, WorkExperience)
+from .permissions import IsStaffUserOrReadOnly, ProfilePermissions
 from .serializers import (AwardsSerializer, CertificationSerializer,
                           CustomUserSerializer, EducationSerializer,
                           InterestSerializer, LanguagesSerializer,
@@ -10,31 +12,35 @@ from .serializers import (AwardsSerializer, CertificationSerializer,
                           WorkExperienceSerializer)
 
 
-class UserLoginView(TokenObtainPairView):
-    pass
-
-class IsStaffUserOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user and request.user.is_staff
-
-class IsStaffUserOrCreate(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method == 'POST':
-            return True
-        return request.user and request.user.is_staff
-
-class ProfilePermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user and request.user.is_staff
-
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        return user
+
+    def create(self, request, *args, **kwargs):
+        profile_data = request.data.pop('profile', None)
+
+        # Create the CustomUser instance without the profile data
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Call the modified perform_create method
+        user = self.perform_create(serializer)
+
+        # Check if profile data was provided
+        if profile_data:
+            # Create the Profile instance and link it to the CustomUser
+            profile_data.update({"user": user.id})
+            profile_serializer = ProfileSerializer(data=profile_data)
+            profile_serializer.is_valid(raise_exception=True)
+            profile_serializer.save(user=user)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -45,33 +51,61 @@ class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Education, profile=profile_id)
+        return obj
 
 class LanguagesViewSet(viewsets.ModelViewSet):
-    queryset = Languages.objects.all()
+    queryset = Language.objects.all()
     serializer_class = LanguagesSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Language, profile=profile_id)
+        return obj
 
 class WorkExperienceViewSet(viewsets.ModelViewSet):
     queryset = WorkExperience.objects.all()
     serializer_class = WorkExperienceSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(WorkExperience, profile=profile_id)
+        return obj
 
 class AwardsViewSet(viewsets.ModelViewSet):
-    queryset = Awards.objects.all()
+    queryset = Award.objects.all()
     serializer_class = AwardsSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Award, profile=profile_id)
+        return obj
 
 class CertificationViewSet(viewsets.ModelViewSet):
     queryset = Certification.objects.all()
     serializer_class = CertificationSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Certification, profile=profile_id)
+        return obj
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Interest, profile=profile_id)
+        return obj
 
 class RanksViewSet(viewsets.ModelViewSet):
-    queryset = Ranks.objects.all()
+    queryset = Rank.objects.all()
     serializer_class = RanksSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+    def get_object(self):
+        profile_id = self.kwargs.get('pk')
+        obj = get_object_or_404(Rank, profile=profile_id)
+        return obj

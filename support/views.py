@@ -1,7 +1,7 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets
 from .models import IssueCategory, UserSupportIssue, SupportInfo
 from .serializers import IssueCategorySerializer, UserSupportIssueSerializer
-from accounts.views import IsStaffUserOrCreate, IsStaffUserOrReadOnly
+from accounts.permissions import IsStaffUserOrCreate, IsStaffUserOrReadOnly
 class IssueCategoryViewSet(viewsets.ModelViewSet):
     queryset = IssueCategory.objects.all()
     serializer_class = IssueCategorySerializer

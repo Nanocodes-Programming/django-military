@@ -66,14 +66,14 @@ class Education(BaseModel):
     description = models.TextField(null=True,blank=True)
 
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
-class Languages(BaseModel):
+class Language(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
     language = models.CharField(max_length=250)
 
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
 class WorkExperience(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
@@ -84,15 +84,15 @@ class WorkExperience(BaseModel):
     date_to = models.DateField()
 
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
-class Awards(BaseModel):
+class Award(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
     name = models.CharField(max_length=250)
     date_given = models.DateField()
     description = models.TextField( null=True,blank=True)   
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
 class Certification(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
@@ -101,19 +101,19 @@ class Certification(BaseModel):
     date_given = models.DateField()
     description = models.TextField( null=True,blank=True)
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
 class Interest(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
     name = models.CharField(max_length=250)
     def __str__(self):
-        return self.profile
+        return str(self.profile)
 
 
-class Ranks(BaseModel):
+class Rank(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
     date_given = models.DateField()
     description = models.TextField(null=True,blank=True)
 
     def __str__(self):
-        return self.profile
+        return str(self.profile)

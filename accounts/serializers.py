@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Profile, Education, Languages, WorkExperience, Awards, Certification, Interest, Ranks
+from .models import CustomUser, Profile, Education, Language, WorkExperience, Award, Certification, Interest, Rank
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 class EducationSerializer(serializers.ModelSerializer):
@@ -9,7 +9,7 @@ class EducationSerializer(serializers.ModelSerializer):
 
 class LanguagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Languages
+        model = Language
         fields = '__all__'
 
 class WorkExperienceSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class WorkExperienceSerializer(serializers.ModelSerializer):
 
 class AwardsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Awards
+        model = Award
         fields = '__all__'
 
 class CertificationSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class InterestSerializer(serializers.ModelSerializer):
 
 class RanksSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Ranks
+        model = Rank
         fields = '__all__'
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -48,15 +48,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['id', 'created_at', 'updated_at', 'personal_number', 'first_name', 'last_name', 'middle_name', 'commisson', 'unit', 'role', 'crop', 'date_of_birth', 'state_of_origin', 'lga', 'blood_group', 'blood_genotype', 'gender', 'bio', 'image', 'user', 'educations','languages','work_experiences','awards','certifications','interests','ranks', ]
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
-
+    profile = ProfileSerializer(read_only=True)
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ["id","created_at","email","username","phone_number","is_suspended","password","is_staff","profile",]
 
     def validate_password(self, value):
         # Validate password using Django's built-in password validators
@@ -67,31 +67,5 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
-        educations_data = profile_data.pop('educations', [])
-        languages_data = profile_data.pop('languages', [])
-        work_experiences_data = profile_data.pop('work_experiences', [])
-        awards_data = profile_data.pop('awards', [])
-        certifications_data = profile_data.pop('certifications', [])
-        interests_data = profile_data.pop('interests', [])
-        ranks_data = profile_data.pop('ranks', [])
-
         user = CustomUser.objects.create(**validated_data)
-        profile = Profile.objects.create(user=user, **profile_data)
-
-        for education_data in educations_data:
-            Education.objects.create(profile=profile, **education_data)
-        for language_data in languages_data:
-            Languages.objects.create(profile=profile, **language_data)
-        for work_experience_data in work_experiences_data:
-            WorkExperience.objects.create(profile=profile, **work_experience_data)
-        for award_data in awards_data:
-            Awards.objects.create(profile=profile, **award_data)
-        for certification_data in certifications_data:
-            Certification.objects.create(profile=profile, **certification_data)
-        for interest_data in interests_data:
-            Interest.objects.create(profile=profile, **interest_data)
-        for rank_data in ranks_data:
-            Ranks.objects.create(profile=profile, **rank_data)
-
         return user
