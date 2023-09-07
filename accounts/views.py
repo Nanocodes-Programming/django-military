@@ -1,6 +1,8 @@
+from authentication.views import randomPassword
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+from utils.communications.email import send_signup_mail
 
 from .models import (Award, Certification, CustomUser, Education, Interest,
                      Language, Profile, Rank, WorkExperience)
@@ -12,12 +14,6 @@ from .serializers import (AwardsSerializer, CertificationSerializer,
                           WorkExperienceSerializer)
 
 
-from rest_framework import viewsets, status, permissions
-from rest_framework.response import Response
-from .models import CustomUser
-from .serializers import CustomUserSerializer, ProfileSerializer, AwardsSerializer, LanguagesSerializer, WorkExperienceSerializer, EducationSerializer, CertificationSerializer, InterestSerializer, RanksSerializer
-from common.responses import CustomErrorResponse, CustomSuccessResponse
-from authentication.views import randomPassword
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -29,13 +25,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         profile_data = request.data.pop('profile', None)
-        education_data = request.data.pop('educations', None)
-        language_data = request.data.pop('languages', None)
-        work_experience_data = request.data.pop('work-experiences', None)
-        award_data = request.data.pop('awards', None)
-        certification_data = request.data.pop('certifications', None)
-        interest_data = request.data.pop('interests', None)
-        rank_data = request.data.pop('ranks', None)
         
         # Create the CustomUser instance without the profile data
         request_data = request.data
@@ -54,70 +43,38 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             profile_data.update({"user": user.id})
             profile_serializer = ProfileSerializer(data=profile_data)
             profile_serializer.is_valid(raise_exception=True)
-            profile_serializer.save(user=user)
+            profile_serializer.save()
+        user_data = {
+            "id": user.id,
+            "created_at": user.created_at,
+            "email": user.email,
+            "username": user.username,
+            "phone_number": user.phone_number,
+        }
 
-        # Check if award data was provided and create it similarly
-        if award_data:
-            award_data.update({"profile": profile_serializer.instance.id})
-            award_serializer = AwardsSerializer(data=award_data)
-            award_serializer.is_valid(raise_exception=True)
-            award_serializer.save()
-
-        # Check if language data was provided and create it similarly
-        if language_data:
-            for data in language_data:
-                data.update({"profile": profile_serializer.instance.id})
-                language_serializer = LanguagesSerializer(data=data)
-                language_serializer.is_valid(raise_exception=True)
-                language_serializer.save()
-
-        # Check if work_experience data was provided and create it similarly
-        if work_experience_data:
-            for data in work_experience_data:
-                data.update({"profile": profile_serializer.instance.id})
-                work_experience_serializer = WorkExperienceSerializer(data=data)
-                work_experience_serializer.is_valid(raise_exception=True)
-                work_experience_serializer.save()
-
-        # Check if education data was provided and create it similarly
-        if education_data:
-            for data in education_data:
-                data.update({"profile": profile_serializer.instance.id})
-                education_serializer = EducationSerializer(data=data)
-                education_serializer.is_valid(raise_exception=True)
-                education_serializer.save()
-
-        # Check if certification data was provided and create it similarly
-        if certification_data:
-            for data in certification_data:
-                data.update({"profile": profile_serializer.instance.id})
-                certification_serializer = CertificationSerializer(data=data)
-                certification_serializer.is_valid(raise_exception=True)
-                certification_serializer.save()
-
-        # Check if interest data was provided and create it similarly
-        if interest_data:
-            for data in interest_data:
-                data.update({"profile": profile_serializer.instance.id})
-                interest_serializer = InterestSerializer(data=data)
-                interest_serializer.is_valid(raise_exception=True)
-                interest_serializer.save()
-
-        # Check if rank data was provided and create it similarly
-        if rank_data:
-            for data in rank_data:
-                data.update({"profile": profile_serializer.instance.id})
-                rank_serializer = RanksSerializer(data=data)
-                rank_serializer.is_valid(raise_exception=True)
-                rank_serializer.save()
-
+        user_data.update({"password":password})
+        # send_signup_mail(user_data)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [ProfilePermissions]
+
+    def get_queryset(self):
+        return Profile.objects.select_related(
+            'user',
+            ).prefetch_related(
+                'educations',
+                'languages',
+                'work_experiences',
+                'awards',
+                'certifications',
+                'interests',
+                'ranks',
+            )
 
 class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()

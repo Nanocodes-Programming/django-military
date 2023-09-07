@@ -57,7 +57,7 @@ class Profile(BaseModel):
 
 
 class Education(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='educations')
     school = models.CharField(max_length=250)
     type_of = models.CharField(max_length=250)
     certification = models.CharField(max_length=225)
@@ -69,14 +69,14 @@ class Education(BaseModel):
         return str(self.profile)
 
 class Language(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="languages")
     language = models.CharField(max_length=250)
 
     def __str__(self):
         return str(self.profile)
 
 class WorkExperience(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="work_experiences")
     name = models.CharField(max_length=250)
     position = models.CharField(max_length=250)
     description = models.TextField(null=True,blank=True)
@@ -87,7 +87,7 @@ class WorkExperience(BaseModel):
         return str(self.profile)
 
 class Award(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="awards")
     name = models.CharField(max_length=250)
     date_given = models.DateField()
     description = models.TextField( null=True,blank=True)   
@@ -95,7 +95,7 @@ class Award(BaseModel):
         return str(self.profile)
 
 class Certification(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="certifications")
     name = models.CharField(max_length=250)
     organisation = models.CharField(max_length=250)
     date_given = models.DateField()
@@ -104,14 +104,14 @@ class Certification(BaseModel):
         return str(self.profile)
 
 class Interest(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="interests")
     name = models.CharField(max_length=250)
     def __str__(self):
         return str(self.profile)
 
 
 class Rank(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE,)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="ranks")
     date_given = models.DateField()
     description = models.TextField(null=True,blank=True)
 

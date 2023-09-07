@@ -1,14 +1,32 @@
-from rest_framework import viewsets, status, permissions
-from rest_framework.response import Response
-from .models import Message
-from .serializers import MessageSerializer
+import uuid
+
 from accounts.models import CustomUser
 from common.responses import CustomErrorResponse, CustomSuccessResponse
+from rest_framework import filters, permissions, status, viewsets
+
+from .models import Message
+from .serializers import MessageSerializer
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        read = self.request.query_params.get('read', None)
+
+        if read is not None:
+            if read == 'true':
+                queryset = queryset.filter(read=True)
+            elif read == 'false':
+                queryset = queryset.filter(read=False)
+            else:
+                queryset = queryset.none()
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         # Get the value of the 'to_user' field from the request data
@@ -18,6 +36,9 @@ class MessageViewSet(viewsets.ModelViewSet):
         if to_user_value == 'all':
             # Send the message to all users in the database
             to_users = CustomUser.objects.all()
+        elif isinstance(to_user_value, list):
+            to_users = CustomUser.objects.filter(id__in=to_user_value)
+            pass
         else:
             # Check if 'to_user' is a UUID (user ID)
             try:
@@ -30,8 +51,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         # Create a message for each recipient
         for to_user in to_users:
             message_data = {
-                'from_user': request.user,
-                'to_user': to_user,
+                'from_user': request.user.id,
+                'to_user': to_user.id,
                 'subject': request.data.get('subject', ''),
                 'body': request.data.get('body', ''),
                 'from_name': request.data.get('from_name', '')
