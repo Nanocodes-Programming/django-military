@@ -45,15 +45,13 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             profile_serializer.is_valid(raise_exception=True)
             profile_serializer.save()
         user_data = {
-            "id": user.id,
-            "created_at": user.created_at,
             "email": user.email,
             "username": user.username,
             "phone_number": user.phone_number,
         }
 
         user_data.update({"password":password})
-        # send_signup_mail(user_data)
+        send_signup_mail(user_data)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
