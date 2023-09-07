@@ -12,6 +12,7 @@ def send_template_email(template, email, subject, **context):
         plain_message,
         "MS Network <{}>".format(settings.EMAIL_HOST_USER),
         [email],
+        #this is example
         html_message=html_message,
     )
     
