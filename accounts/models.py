@@ -61,6 +61,7 @@ class Education(BaseModel):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='educations')
     school = models.CharField(max_length=250)
     type_of = models.CharField(max_length=250)
+    course = models.CharField(max_length=255)
     certification = models.CharField(max_length=225)
     date_from = models.DateField()
     date_to = models.DateField()
