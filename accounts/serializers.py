@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Profile, Education, Language, WorkExperience, Award, Certification, Interest, Rank
+from .models import CustomUser, Profile, Education, Language, WorkExperience, Award, Certification, Interest
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 class EducationSerializer(serializers.ModelSerializer):
@@ -32,10 +32,6 @@ class InterestSerializer(serializers.ModelSerializer):
         model = Interest
         fields = '__all__'
 
-class RanksSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rank
-        fields = '__all__'
 
 class ProfileSerializer(serializers.ModelSerializer):
     educations = EducationSerializer(many=True, read_only=True)
@@ -44,11 +40,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     awards = AwardsSerializer(many=True, read_only=True)
     certifications = CertificationSerializer(many=True, read_only=True)
     interests = InterestSerializer(many=True, read_only=True)
-    ranks = RanksSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
-        fields = ['id', 'created_at', 'updated_at', 'personal_number', 'first_name', 'last_name', 'middle_name', 'commisson', 'unit', 'role', 'crop', 'date_of_birth', 'state_of_origin', 'lga', 'blood_group', 'blood_genotype', 'gender', 'bio', 'image', 'user', 'educations','languages','work_experiences','awards','certifications','interests','ranks', ]
+        fields = ['id', 'created_at', 'updated_at', 'personal_number', 'first_name', 'last_name', 'middle_name', 'commisson', 'unit', 'role', 'crop', 'rank', 'date_of_birth', 'state_of_origin', 'lga', 'blood_group', 'blood_genotype', 'gender', 'bio', 'image', 'user', 'educations','languages','work_experiences','awards','certifications','interests' ]
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

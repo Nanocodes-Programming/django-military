@@ -5,12 +5,12 @@ from rest_framework.response import Response
 from utils.communications.email import send_signup_mail
 
 from .models import (Award, Certification, CustomUser, Education, Interest,
-                     Language, Profile, Rank, WorkExperience)
+                     Language, Profile, WorkExperience)
 from .permissions import IsStaffUserOrReadOnly, ProfilePermissions
 from .serializers import (AwardsSerializer, CertificationSerializer,
                           CustomUserSerializer, EducationSerializer,
                           InterestSerializer, LanguagesSerializer,
-                          ProfileSerializer, RanksSerializer,
+                          ProfileSerializer,
                           WorkExperienceSerializer)
 
 
@@ -70,8 +70,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 'work_experiences',
                 'awards',
                 'certifications',
-                'interests',
-                'ranks',
+                'interests'
             )
 
 class EducationViewSet(viewsets.ModelViewSet):
@@ -106,9 +105,4 @@ class CertificationViewSet(viewsets.ModelViewSet):
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
-    permission_classes = [IsStaffUserOrReadOnly]
-
-class RanksViewSet(viewsets.ModelViewSet):
-    queryset = Rank.objects.all()
-    serializer_class = RanksSerializer
     permission_classes = [IsStaffUserOrReadOnly]

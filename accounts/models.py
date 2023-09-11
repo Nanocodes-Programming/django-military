@@ -43,6 +43,7 @@ class Profile(BaseModel):
     unit = models.CharField(max_length=100)
     role = models.CharField(max_length=255)
     crop = models.CharField(max_length=255)
+    rank = models.CharField(max_length=255)
     date_of_birth = models.DateField(null=True,blank=True)
     state_of_origin = models.CharField(max_length=50 ,null=True,blank=True)
     lga = models.CharField(max_length=50 ,null=True,blank=True)
@@ -109,11 +110,3 @@ class Interest(BaseModel):
     def __str__(self):
         return str(self.profile)
 
-
-class Rank(BaseModel):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="ranks")
-    date_given = models.DateField()
-    description = models.TextField(null=True,blank=True)
-
-    def __str__(self):
-        return str(self.profile)
