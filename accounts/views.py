@@ -78,10 +78,6 @@ class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(Education, profile=profile_id)
-        return obj
 
 class LanguagesViewSet(viewsets.ModelViewSet):
     queryset = Language.objects.all()
@@ -96,43 +92,23 @@ class WorkExperienceViewSet(viewsets.ModelViewSet):
     queryset = WorkExperience.objects.all()
     serializer_class = WorkExperienceSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(WorkExperience, profile=profile_id)
-        return obj
 
 class AwardsViewSet(viewsets.ModelViewSet):
     queryset = Award.objects.all()
     serializer_class = AwardsSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(Award, profile=profile_id)
-        return obj
 
 class CertificationViewSet(viewsets.ModelViewSet):
     queryset = Certification.objects.all()
     serializer_class = CertificationSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(Certification, profile=profile_id)
-        return obj
 
 class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(Interest, profile=profile_id)
-        return obj
 
 class RanksViewSet(viewsets.ModelViewSet):
     queryset = Rank.objects.all()
     serializer_class = RanksSerializer
     permission_classes = [IsStaffUserOrReadOnly]
-    def get_object(self):
-        profile_id = self.kwargs.get('pk')
-        obj = get_object_or_404(Rank, profile=profile_id)
-        return obj
