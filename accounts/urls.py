@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (AwardsViewSet, CertificationViewSet, CustomUserViewSet,
                     EducationViewSet, InterestViewSet, LanguagesViewSet,
-                    ProfileViewSet, WorkExperienceViewSet, UserViewSet)
+                    ProfileViewSet, WorkExperienceViewSet, UserViewSet, UserSearchView)
 
 router = DefaultRouter()
 # router.register(r'register', RegistrationView, basename='register')
@@ -21,5 +21,6 @@ router.register(r'user', UserViewSet, basename='user')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('users/search/<str:keyword>', UserSearchView.as_view()),
 ]
 

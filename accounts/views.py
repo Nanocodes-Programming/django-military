@@ -1,9 +1,10 @@
 from authentication.views import randomPassword
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets, generics, permissions
+from rest_framework import status, viewsets, permissions
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.communications.email import send_signup_mail
-
+from django.db.models import Q
 from .models import (Award, Certification, CustomUser, Education, Interest,
                      Language, Profile, WorkExperience)
 from .permissions import IsStaffUserOrReadOnly, ProfilePermissions
@@ -113,3 +114,24 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     def get_queryset(self):
         return CustomUser.objects.filter(id=self.request.user.id)
+
+class UserSearchView(APIView):
+    def get(self, request, *args, **kwargs):
+
+        # Get the search keyword from the URL parameter
+        keyword = kwargs['keyword']
+
+        # Filter users based on email and/or name
+        users = CustomUser.objects.all()
+
+        if keyword:
+            # Use Q objects to perform OR queries on multiple fields
+            users = users.filter(
+                Q(email__icontains=keyword) |
+                Q(profile__first_name__icontains=keyword) |
+                Q(profile__last_name__icontains=keyword)
+            )
+
+        # Serialize the filtered users
+        serializer = CustomUserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
