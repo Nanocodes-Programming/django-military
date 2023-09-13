@@ -1,6 +1,6 @@
 from authentication.views import randomPassword
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, generics, permissions
 from rest_framework.response import Response
 from utils.communications.email import send_signup_mail
 
@@ -106,3 +106,10 @@ class InterestViewSet(viewsets.ModelViewSet):
     queryset = Interest.objects.all()
     serializer_class = InterestSerializer
     permission_classes = [IsStaffUserOrReadOnly]
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self):
+        return CustomUser.objects.filter(id=self.request.user.id)
