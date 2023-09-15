@@ -20,7 +20,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG')
 
 CORS_ORIGIN_ALLOW_ALL = True
-ALLOWED_HOSTS = ['127.0.0.1', 'django-military-a2ef48dd12e3.herokuapp.com', 'localhost', 'msnetwork.com.ng']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
