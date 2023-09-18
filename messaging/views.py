@@ -38,20 +38,21 @@ class MessageViewSet(viewsets.ModelViewSet):
             to_users = CustomUser.objects.all()
         elif isinstance(to_user_value, list):
             to_users = CustomUser.objects.filter(id__in=to_user_value)
-            pass
         else:
             # Check if 'to_user' is a UUID (user ID)
             try:
                 to_user_uuid = uuid.UUID(to_user_value)
-                to_users = [CustomUser.objects.get(id=to_user_uuid)]
+                to_users = [CustomUser.objects.get(id=to_user_value)]
             except (ValueError, CustomUser.DoesNotExist):
                 # If it's not a UUID or user doesn't exist, treat it as an empty list
                 to_users = []
         
+        # Check if 'from_user' is provided
+        from_user_id = request.user.id
         # Create a message for each recipient
         for to_user in to_users:
             message_data = {
-                'from_user': request.user.id,
+                'from_user': from_user_id,
                 'to_user': to_user.id,
                 'subject': request.data.get('subject', ''),
                 'body': request.data.get('body', ''),
