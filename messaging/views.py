@@ -17,6 +17,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         read = self.request.query_params.get('read', None)
+        sent = self.request.query_params.get('sent', None)
+
+        if sent == 'true':
+            # Get messages sent by the user
+            queryset = queryset.filter(from_user=self.request.user)
+        elif sent == 'false':
+            # Get messages received by the user
+            queryset = queryset.filter(to_user=self.request.user)
 
         if read is not None:
             if read == 'true':
