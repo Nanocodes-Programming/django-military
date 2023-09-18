@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.communications.email import send_signup_mail
 from django.db.models import Q
+from django.contrib.auth.hashers import make_password
 from .models import (Award, Certification, CustomUser, Education, Interest,
                      Language, Profile, WorkExperience)
 from .permissions import IsStaffUserOrReadOnly, ProfilePermissions
@@ -31,7 +32,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         request_data = request.data
         request_data.pop('password', None)
         password = randomPassword()
-        request_data.update({'password': password})
+        hashed_password = make_password(password)
+        request_data['password'] = hashed_password
         serializer = self.get_serializer(data=request_data)
         serializer.is_valid(raise_exception=True)
 
