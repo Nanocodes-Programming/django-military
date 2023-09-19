@@ -4,15 +4,21 @@ import string
 from accounts.models import CustomUser
 from accounts.permissions import IsStaff
 from common.responses import CustomErrorResponse, CustomSuccessResponse
-from rest_framework import status
+from django.contrib.auth import authenticate
+from django.utils import timezone
+from rest_framework import serializers, status, generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from utils.communications.email import send_reset_request_mail
-from rest_framework_simplejwt.exceptions import TokenError
-from .serializers import ChangePasswordSerializer, ResetPasswordSerializer
 
+from .serializers import ChangePasswordSerializer, ResetPasswordSerializer, LoginSerializer
+from drf_yasg.utils import swagger_auto_schema
+
+User = CustomUser
 
 def randomPassword():
     characters = string.ascii_letters + string.digits + "*.$#,"
@@ -84,3 +90,73 @@ class ResetPassword(APIView):
         else:
             return CustomErrorResponse(data=serializer.errors)
 
+
+class LoginView(generics.GenericAPIView):
+    serializer_class = LoginSerializer  # Use a single class, not a list
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        
+        user, token = self.login_user(username, password)
+        user_data = {
+                "id": user.id,
+                "created_at": user.created_at,
+                "email": user.email,
+                "username": user.username,
+                "phone_number": user.phone_number,
+                "is_suspended": user.is_suspended,
+                "is_staff": user.is_staff,
+                # Include other fields you want here
+            }
+        data = {
+            "access": token.get("access"),
+            "refresh": token.get("refresh"),
+            "user": user_data  # Use the serializer directly here
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def login_user(self, username, password):
+        # Check if the user exists and is active
+        try:
+            user = User.objects.get(username=username)
+            if not user.is_active:
+                raise serializers.ValidationError(
+                    {"username": ["This user is currently not active. Kindly verify your email."]}
+                )
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                {"username": ["Invalid login details."]}
+            )
+
+        # Authenticate the user
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise serializers.ValidationError(
+                {"username": ["Invalid login details."]}
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                {"username": ["This user is currently not active. Kindly contact support."]}
+            )
+
+        # Generate and return the tokens
+        token = self.get_token_for_user(user)
+        return user, token
+
+    def get_token_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        last_login = timezone.now() + timezone.timedelta(hours=1)
+        user.last_login = last_login
+        user.save()
+
+        refresh['email'] = user.email
+
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
