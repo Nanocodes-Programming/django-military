@@ -2,7 +2,7 @@ from accounts.permissions import IsStaffUserOrCreate, IsStaffUserOrReadOnly
 from rest_framework import filters, viewsets
 
 from .models import IssueCategory, SupportInfo, UserSupportIssue
-from .serializers import IssueCategorySerializer, UserSupportIssueSerializer
+from .serializers import IssueCategorySerializer, UserSupportIssueSerializer, SupportInfoSerializer
 
 
 class IssueCategoryViewSet(viewsets.ModelViewSet):
@@ -32,5 +32,5 @@ class UserSupportIssueViewSet(viewsets.ModelViewSet):
 
 class SupportInfoViewSet(viewsets.ModelViewSet):
     queryset = SupportInfo.objects.all()
-    serializer_class = UserSupportIssueSerializer
+    serializer_class = SupportInfoSerializer
     permission_classes = [IsStaffUserOrReadOnly]
