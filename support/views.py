@@ -1,4 +1,5 @@
 from accounts.permissions import IsStaffUserOrCreate, IsStaffUserOrReadOnly
+from activityLog.models import ActivityLog
 from rest_framework import filters, viewsets
 
 from .models import IssueCategory, SupportInfo, UserSupportIssue
@@ -15,6 +16,15 @@ class UserSupportIssueViewSet(viewsets.ModelViewSet):
     serializer_class = UserSupportIssueSerializer
     permission_classes = [IsStaffUserOrCreate]
     filter_backends = [filters.SearchFilter]
+
+    def perform_create(self, serializer):
+        activity_data = {
+            'user': self.request.user,
+            'action': 'Sent an issue',
+        }
+        ActivityLog.objects.create(**activity_data)
+        serializer.save()
+
 
     def get_queryset(self):
         queryset = super().get_queryset()

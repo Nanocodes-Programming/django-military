@@ -1,6 +1,7 @@
 import uuid
 
 from accounts.models import CustomUser
+from activityLog.models import ActivityLog
 from common.responses import CustomErrorResponse, CustomSuccessResponse
 from rest_framework import filters, permissions, status, viewsets
 
@@ -72,4 +73,10 @@ class MessageViewSet(viewsets.ModelViewSet):
             else:
                 return CustomErrorResponse(data=message_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+        activity_data = {
+                'user':request.user,
+                'action' : 'Sent a message',
+                }
+
+        ActivityLog.objects.create(**activity_data)
         return CustomSuccessResponse(message='Messages sent successfully.', status=status.HTTP_201_CREATED)

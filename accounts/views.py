@@ -1,4 +1,5 @@
 from authentication.views import randomPassword
+from activityLog.models import ActivityLog
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
@@ -52,6 +53,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             "username": user.username,
             "phone_number": user.phone_number,
         }
+        activity_data = {
+                'user':user,
+                'action' : 'Viewed users',
+                }
+
+        ActivityLog.objects.create(**activity_data)
 
         user_data.update({"password":password})
         send_signup_mail(user_data)

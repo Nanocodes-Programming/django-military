@@ -36,6 +36,7 @@ urlpatterns = [
     path('api/v1/',include("messaging.urls")),
     path('api/v1/',include("support.urls")),
     path('api/v1/',include("authentication.urls")),
-    path('api/', schema_view.with_ui('swagger', cache_timeout=None)),
+    path('api/v1/', include("activityLog.urls")),
+    path('', schema_view.with_ui('swagger', cache_timeout=None)),
 
 ]

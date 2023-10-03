@@ -3,6 +3,7 @@ import string
 
 from accounts.models import CustomUser
 from accounts.permissions import IsStaff
+from activityLog.models import ActivityLog
 from common.responses import CustomErrorResponse, CustomSuccessResponse
 from django.contrib.auth import authenticate
 from django.utils import timezone
@@ -54,6 +55,14 @@ class ChangePassword(APIView):
             user.set_password(serializer.validated_data['new_password'])
             user.save()
 
+                    #add to log
+            activity_data = {
+            'user':user,
+            'action' : 'Changed password',
+            }
+
+            ActivityLog.objects.create(**activity_data)
+
             return CustomSuccessResponse(message='Password changed successfully.')
         else:
             return CustomErrorResponse(data=serializer.errors)
@@ -81,7 +90,13 @@ class ResetPassword(APIView):
                 "is_staff": user.is_staff,
                 # Include other fields you want here
             }
+                activity_data = {
+                'user':user,
+                'action' : 'Password was reset',
+                }
 
+                ActivityLog.objects.create(**activity_data)
+                
                 send_reset_request_mail(user_data, password)
                 return CustomSuccessResponse(message='Password reset successful.')
             else:
@@ -117,6 +132,13 @@ class LoginView(generics.GenericAPIView):
             "refresh": token.get("refresh"),
             "user": user_data  # Use the serializer directly here
         }
+        #add to log
+        activity_data = {
+        'user':user,
+        'action' : 'Logged in',
+        }
+
+        ActivityLog.objects.create(**activity_data)
         return Response(data=data, status=status.HTTP_200_OK)
 
     def login_user(self, username, password):
