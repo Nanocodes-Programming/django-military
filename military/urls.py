@@ -28,6 +28,8 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    url="https://web-production-8638a.up.railway.app/"
+
     )
 
 urlpatterns = [
